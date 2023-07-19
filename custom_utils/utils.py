@@ -8,6 +8,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torchvision
 import sklearn.metrics
+import pandas as pd
 from torchvision import datasets, transforms
 from torch.utils.tensorboard import SummaryWriter
 from collections import defaultdict
