@@ -221,6 +221,7 @@ def train_model(
 
     model.to(device)
     best_eval_loss = float("inf")
+    best_train_loss = float("inf")
 
     # It seems that SGD optimizer is better than Adam optimizer for ResNet18 training on CIFAR10.
     # optimizer = optim.SGD(model.parameters(),
@@ -317,9 +318,14 @@ def train_model(
         eval_loss, eval_accuracy, _ = evaluate_model(
             model=model, test_loader=test_loader, device=device, criterion=criterion
         )
-        if eval_loss < best_eval_loss:
-            best_model_state_dict = model.state_dict()
-            best_eval_loss = eval_loss
+        # if eval_loss < best_eval_loss:
+        #     best_model_state_dict = model.state_dict()
+        #     best_eval_loss = eval_loss
+        #     patience_stack = 0
+        # else:
+        #     patience_stack += 1
+        if train_loss < best_train_loss:
+            best_train_loss = train_loss
             patience_stack = 0
         else:
             patience_stack += 1
@@ -333,7 +339,7 @@ def train_model(
 
         if verbose:
             print(
-                "Epoch: {:03d} Train Loss: {:.3f} Train Acc: {:.3f} Eval Loss: {:.3f} Eval Acc: {:.3f}".format(
+                "Epoch: {:03d} Train Loss: {:.4f} Train Acc: {:.4f} Eval Loss: {:.4f} Eval Acc: {:.4f}".format(
                     epoch + 1, train_loss, train_accuracy, eval_loss, eval_accuracy
                 )
             )
@@ -344,7 +350,7 @@ def train_model(
             log_dict["eval_loss"].append(float(eval_loss))
             log_dict["train_acc"].append(float(train_accuracy))
             log_dict["eval_acc"].append(float(eval_accuracy))
-    model.load_state_dict(best_model_state_dict)
+    # model.load_state_dict(best_model_state_dict)
 
     if is_log_dict:
         return model, log_dict

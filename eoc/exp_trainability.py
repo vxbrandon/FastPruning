@@ -30,17 +30,18 @@ def exp_trainability(args=None) -> None:
 
     # Parameters for experiments @Jay: Fix hard-coded
     data_type = "MNIST"
-    depth = 30
-    width = 200
+    depth = 50
+    width = 300
     num_experiments = 2
-    num_epochs = 30
+    num_epochs = 20
     act = np.tanh
     d_act = d_tanh
     tau_1 = tau_2 = 1.0
     q_star = 0.5
-    lr_rate = 1e-2
+    lr_rate = 1e-3
     optimizer = "SGD"
-    weight_decay = 5e-4
+    weight_decay = 0
+    patience = 20
 
     # Load dataset
     train_loader, test_loader, classes = utils.prepare_dataloader(
@@ -81,16 +82,18 @@ def exp_trainability(args=None) -> None:
             "bias variance": sb,
             "q_star": q_star,
             "tau": 0,
+            "patience": patience,
+            "model": "FCN"
         }
-        for tau in [-1.0, -0.5, -0.1,  0, 0.1,  0.5, 1.0]:
+        for tau_per in [0.1, 0.5, 0.8, 1, 1.2, 2.0, 10.0]:
             log_dir = os.path.join("logs", group_name)
-            new_sw = sw + tau
+            new_sw = sw * tau_per
             fcn.apply(lambda m: init_weights(m, new_sw, sb))
             fcn, log_dict = utils.train_model(
                 model=fcn,
                 train_loader=train_loader,
                 test_loader=test_loader,
-                patience=5,
+                patience=patience,
                 num_epochs=num_epochs,
                 verbose=True,
                 device=device,
@@ -110,14 +113,14 @@ def exp_trainability(args=None) -> None:
             eval_table = wandb.Table(
                 data=eval_accs_data, columns=["epochs", "eval accuracy"]
             )
+            config["tau_per"] = tau_per
             wandb.init(
                 project="Edge of Chaos",
                 tags=["EOC preliminary", "EOC trainability"],
                 group=group_name,
-                name=f"tau={tau}",
+                name=f"tau_per={tau_per}",
+                config=config,
             )
-            config["tau"] = tau
-            wandb.config = config
             wandb.log(
                 {
                     group_name
@@ -144,7 +147,7 @@ def exp_trainability(args=None) -> None:
             wandb.finish()
             if not os.path.exists(log_dir):
                 os.makedirs(log_dir)
-            filename = f"tau-{tau}"
+            filename = f"tau_per-{tau_per}"
             filepath = os.path.join(log_dir, filename + ".csv")
             print(log_dict)
             utils.log_data(log_dict, filepath)
