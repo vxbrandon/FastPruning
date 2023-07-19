@@ -38,8 +38,8 @@ def exp_trainability(args=None) -> None:
     d_act = d_tanh
     tau_1 = tau_2 = 1.0
     q_star = 0.5
-    lr_rate = 1e-3
-    optimizer = "ADAM"
+    lr_rate = 1e-2
+    optimizer = "SGD"
     weight_decay = 5e-4
 
     # # Logs args
@@ -53,7 +53,7 @@ def exp_trainability(args=None) -> None:
     input_dims = next(iter(train_loader))[0].size()[-1]
 
     # Pre-configuration
-    seed = 1
+    seed = 2
     utils.set_random_seeds(seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -86,21 +86,13 @@ def exp_trainability(args=None) -> None:
             "tau": 0,
         }
         for tau in [-1.0, -0.5, -0.1,  0, 0.1,  0.5, 1.0]:
-            wandb.init(
-                project="Edge of Chaos",
-                tags=["EOC preliminary", "EOC trainability"],
-                group=group_name,
-                name=f"tau={tau}",
-            )
-            config["tau"] = tau
-            wandb.config = config
             new_sw = sw + tau
             fcn.apply(lambda m: init_weights(m, new_sw, sb))
             fcn, log_dict = utils.train_model(
                 model=fcn,
                 train_loader=train_loader,
                 test_loader=test_loader,
-                patience=10,
+                patience=5,
                 num_epochs=num_epochs,
                 verbose=True,
                 device=device,
@@ -120,6 +112,14 @@ def exp_trainability(args=None) -> None:
             eval_table = wandb.Table(
                 data=eval_accs_data, columns=["epochs", "eval accuracy"]
             )
+            wandb.init(
+                project="Edge of Chaos",
+                tags=["EOC preliminary", "EOC trainability"],
+                group=group_name,
+                name=f"tau={tau}",
+            )
+            config["tau"] = tau
+            wandb.config = config
             wandb.log(
                 {
                     group_name
