@@ -86,6 +86,7 @@ def exp_trainability(args=None) -> None:
             "tau": 0,
         }
         for tau in [-1.0, -0.5, -0.1,  0, 0.1,  0.5, 1.0]:
+            log_dir = os.path.join("logs", group_name)
             new_sw = sw + tau
             fcn.apply(lambda m: init_weights(m, new_sw, sb))
             fcn, log_dict = utils.train_model(
@@ -144,6 +145,12 @@ def exp_trainability(args=None) -> None:
             )
             wandb.run.summary["best_accuracy"] = eval_accs[-1]
             wandb.finish()
+            if not os.path.exists(log_dir):
+                os.makedirs(log_dir)
+            filename = f"tau-{tau}"
+            filepath = os.path.join(log_dir, filename + ".csv")
+            print(log_dict)
+            utils.log_data(log_dict, filepath)
 
 
 if __name__ == "__main__":
