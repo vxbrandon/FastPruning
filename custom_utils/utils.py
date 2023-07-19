@@ -339,11 +339,11 @@ def train_model(
             )
 
         if is_log_dict:
-            log_dict["epochs"].append(epoch)
-            log_dict["train_loss"].append(train_loss)
-            log_dict["eval_loss"].append(eval_loss)
-            log_dict["train_acc"].append(train_accuracy)
-            log_dict["eval_acc"].append(eval_accuracy)
+            log_dict["epochs"].append(int(epoch))
+            log_dict["train_loss"].append(float(train_loss))
+            log_dict["eval_loss"].append(float(eval_loss))
+            log_dict["train_acc"].append(float(train_accuracy))
+            log_dict["eval_acc"].append(float(eval_accuracy))
     model.load_state_dict(best_model_state_dict)
 
     if is_log_dict:

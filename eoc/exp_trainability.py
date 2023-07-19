@@ -42,9 +42,6 @@ def exp_trainability(args=None) -> None:
     optimizer = "SGD"
     weight_decay = 5e-4
 
-    # # Logs args
-    # logs_args = {"log_dir": "log_dir", "params": f"width-{width}_depth-{depth}_q-{q_star}"}
-
     # Load dataset
     train_loader, test_loader, classes = utils.prepare_dataloader(
         data_type=data_type, is_flatten=True
