@@ -27,7 +27,7 @@ def init_weights(m, sw, sb):
 def init_weights_pruned(m, sw, sb, prune_amount, num_classes):
     if type(m) == nn.Linear:
         scaling_factor = m.out_features
-        if "weight_mask" in m.named_buffers():
+        if hasattr(m, "weight_mask"):
             mask = m.weight_mask
             prune_amount = float(torch.sum(mask==0) / torch.numel(mask))
             scaling_factor *= (1-prune_amount)
