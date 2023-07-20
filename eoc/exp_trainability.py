@@ -3,6 +3,8 @@ import torch.nn as nn
 import numpy as np
 import os
 import wandb
+import betterspy
+import scipy.sparse as sparse
 
 from torch.utils.tensorboard import SummaryWriter
 from collections import defaultdict
@@ -107,6 +109,7 @@ def exp_trainability(args=None) -> None:
             log_dir = os.path.join("logs", group_name)
             new_sw = sw * tau_per
             fcn.apply(lambda m: init_weights_pruned(m, new_sw, sb, 0.005, num_classes))
+            betterspy.show(sparse.csr_matrix(fcn.fc0.weight.cpu().detach()))
             fcn, log_dict = utils.train_model(
                 model=fcn,
                 train_loader=train_loader,
