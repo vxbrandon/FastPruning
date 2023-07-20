@@ -30,7 +30,7 @@ def init_weights_pruned(m, sw, sb, prune_amount, num_classes):
         if hasattr(m, "weight_mask"):
             mask = m.weight_mask
             prune_amount = float(torch.sum(mask==0) / torch.numel(mask))
-            scaling_factor *= (1-prune_amount)
+            scaling_factor *= (1 - prune_amount)
             print(f"scaling factor: {scaling_factor}")
         nn.init.normal_(m.weight, mean=0.0, std=(np.sqrt(sw / scaling_factor)))
         nn.init.normal_(m.bias, mean=0.0, std=np.sqrt(sb))
@@ -79,8 +79,8 @@ def exp_trainability(args=None) -> None:
     )
     for module in fcn.modules():
         if isinstance(module, nn.Linear) and module.out_features != num_classes:
-            diag_pruning_linear(module, 10, "RANDOM")
-    model_name = "FCN_diag_block_10x10"
+            diag_pruning_linear(module, 100, "RANDOM")
+    model_name = "FCN_diag_block_100x100"
 
     for q_star in [0.2, 0.5, 1.0, 1.5]:
         print(f"Calculating eoc curve for qstar {q_star}...")
