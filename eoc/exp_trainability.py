@@ -45,10 +45,10 @@ def exp_trainability(args=None) -> None:
 
     # Parameters for experiments @Jay: Fix hard-coded
     data_type = "MNIST"
-    depth = 15
+    depth = 20
     width = 2000
     num_experiments = 2
-    num_epochs = 5
+    num_epochs = 20
     act = np.tanh
     d_act = d_tanh
     tau_1 = tau_2 = 1.0
