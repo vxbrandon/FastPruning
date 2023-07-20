@@ -46,7 +46,7 @@ def exp_trainability(args=None) -> None:
     depth = 5
     width = 2000
     num_experiments = 2
-    num_epochs = 20
+    num_epochs = 5
     act = np.tanh
     d_act = d_tanh
     tau_1 = tau_2 = 1.0
@@ -103,7 +103,7 @@ def exp_trainability(args=None) -> None:
             "patience": patience,
             "model": model_name,
         }
-        for tau_per in [0.1, 0.5, 0.8, 1, 1.2, 2.0, 10.0]:
+        for tau_per in [0.5, 0.8, 1, 1.2, 2.0]:
             log_dir = os.path.join("logs", group_name)
             new_sw = sw * tau_per
             fcn.apply(lambda m: init_weights_pruned(m, new_sw, sb, 0.005, num_classes))
