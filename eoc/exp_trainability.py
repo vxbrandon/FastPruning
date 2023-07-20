@@ -10,6 +10,7 @@ from collections import defaultdict
 from meanfield import MeanField
 from models.fcn import FCN
 from custom_utils import utils
+from custom_utils.pruning.diag_pruning import diag_pruning_linear
 
 
 def d_tanh(x):
@@ -23,6 +24,18 @@ def init_weights(m, sw, sb):
         nn.init.normal_(m.bias, mean=0.0, std=np.sqrt(sb))
 
 
+def init_weights_pruned(m, sw, sb, prune_amount, num_classes):
+    if type(m) == nn.Linear:
+        scaling_factor = m.out_features
+        if "weight_mask" in m.named_buffers():
+            mask = m.weight_mask
+            prune_amount = float(torch.sum(mask==0) / torch.numel(mask))
+            scaling_factor *= (1-prune_amount)
+            print(f"scaling factor: {scaling_factor}")
+        nn.init.normal_(m.weight, mean=0.0, std=(np.sqrt(sw / scaling_factor)))
+        nn.init.normal_(m.bias, mean=0.0, std=np.sqrt(sb))
+
+
 def exp_trainability(args=None) -> None:
     """
     Explore the trainability of FCN on MNISt after being initialized far from EOC curve.
@@ -30,8 +43,8 @@ def exp_trainability(args=None) -> None:
 
     # Parameters for experiments @Jay: Fix hard-coded
     data_type = "MNIST"
-    depth = 50
-    width = 300
+    depth = 5
+    width = 2000
     num_experiments = 2
     num_epochs = 20
     act = np.tanh
@@ -64,11 +77,16 @@ def exp_trainability(args=None) -> None:
         num_classes=num_classes,
         input_dims=input_dims,
     )
+    for module in fcn.modules():
+        if isinstance(module, nn.Linear) and module.out_features != num_classes:
+            diag_pruning_linear(module, 10, "RANDOM")
+    model_name = "FCN_diag_block_10x10"
+
     for q_star in [0.2, 0.5, 1.0, 1.5]:
         print(f"Calculating eoc curve for qstar {q_star}...")
         meanfield = MeanField(np.tanh, d_act)
         sw, sb = meanfield.sw_sb(q_star, 1)
-        group_name = f"depth-{depth}_width-{width}_q-{q_star}"  # For logging purpose
+        group_name = f"{model_name}_depth-{depth}_width-{width}_q-{q_star}"  # For logging purpose
         config = {
             "depth": depth,
             "width": width,
@@ -83,12 +101,12 @@ def exp_trainability(args=None) -> None:
             "q_star": q_star,
             "tau": 0,
             "patience": patience,
-            "model": "FCN"
+            "model": model_name,
         }
         for tau_per in [0.1, 0.5, 0.8, 1, 1.2, 2.0, 10.0]:
             log_dir = os.path.join("logs", group_name)
             new_sw = sw * tau_per
-            fcn.apply(lambda m: init_weights(m, new_sw, sb))
+            fcn.apply(lambda m: init_weights_pruned(m, new_sw, sb, 0.005, num_classes))
             fcn, log_dict = utils.train_model(
                 model=fcn,
                 train_loader=train_loader,
