@@ -95,7 +95,6 @@ def diag_pruning_linear(
     if perm_type == "CUSTOM":
         mask = mask[:, col_perm]
         mask = mask[row_perm, :]
-    print(mask.shape, module.weight.shape)
 
     prune.custom_from_mask(module, "weight", mask)
 

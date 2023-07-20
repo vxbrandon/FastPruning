@@ -33,7 +33,6 @@ def init_weights_pruned(m, sw, sb, prune_amount, num_classes):
             mask = m.weight_mask
             prune_amount = float(torch.sum(mask==0) / torch.numel(mask))
             scaling_factor *= (1 - prune_amount)
-            print(f"scaling factor: {scaling_factor}")
             nn.init.normal_(m.weight_orig, mean=0.0, std=(np.sqrt(sw / scaling_factor)))
         nn.init.normal_(m.bias, mean=0.0, std=np.sqrt(sb))
 
