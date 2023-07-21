@@ -410,6 +410,6 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     assert args.num_taus % 2 != 0, f"{args.num_taus} should be odd to include tau_per = 1 which is EOC case"
-    # exp_trainability(args)
-    filepath = os.path.join("logs_3d", "run_", "3d_graph_log.json")
-    plot_3d(filepath)
+    exp_trainability(args)
+    # filepath = os.path.join("logs_3d", "run_", "3d_graph_log.json")
+    # plot_3d(filepath)
