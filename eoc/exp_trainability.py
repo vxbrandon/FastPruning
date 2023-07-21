@@ -275,6 +275,14 @@ def exp_trainability(args: argparse.Namespace = None) -> None:
         ax.set_xlabel("sw")
         ax.set_ylabel("sb")
         ax.set_zlabel("eval acc")
+
+        # EOC curve
+        num_taus = sw_grid.shape[0]
+        eoc_idx = (num_taus - 1) / 2
+        eoc_sw_list = sw_grid[eoc_idx, :]
+        eoc_sb_list = sb_grid[eoc_idx, :]
+        eoc_eval_acc_list = eval_acc_grid[eoc_idx, :]
+        ax.plot(eoc_sw_list, eoc_sb_list, eoc_eval_acc_list, label='EOC')
         plt.show()
 
 def plot_3d(filepath:str):
@@ -292,6 +300,14 @@ def plot_3d(filepath:str):
     ax.set_xlabel("sw")
     ax.set_ylabel("sb")
     ax.set_zlabel("train acc")
+
+    # EOC curve
+    num_taus = sw_grid.shape[0]
+    eoc_idx = int((num_taus - 1) / 2)
+    eoc_sw_list = sw_grid[eoc_idx, :]
+    eoc_sb_list = sb_grid[eoc_idx, :]
+    eoc_eval_acc_list = train_acc_grid[eoc_idx, :]
+    ax.plot(eoc_sw_list, eoc_sb_list, eoc_eval_acc_list, label='EOC')
     plt.show()
 
 if __name__ == "__main__":
@@ -392,8 +408,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--debug", action="store_true", default=False, help="debug the main experiment"
     )
-
     args = parser.parse_args()
-    exp_trainability(args)
-    # filepath = os.path.join("logs_3d", "run_", "3d_graph_log.json")
-    # plot_3d(filepath)
+    assert args.num_taus % 2 != 0, f"{args.num_taus} should be odd to include tau_per = 1 which is EOC case"
+    # exp_trainability(args)
+    filepath = os.path.join("logs_3d", "run_", "3d_graph_log.json")
+    plot_3d(filepath)
