@@ -271,6 +271,13 @@ def exp_trainability(args: argparse.Namespace = None) -> None:
         )
         wandb.log({"3d plot": wandb.Image(fig)})
         wandb.finish()
+        graph_log_dict = {
+            "sw_grid": sw_grid.tolist(),
+            "sb_grid": sb_grid.tolist(),
+            "train_acc_grid": train_acc_grid.tolist(),
+            "eval_acc_grid": eval_acc_grid.tolist()
+        }
+        print(graph_log_dict)
     # Logging 3d results
     orig_log_dir = os.path.join("logs_3d", "run_")
     log_dir = orig_log_dir
@@ -278,7 +285,7 @@ def exp_trainability(args: argparse.Namespace = None) -> None:
     while os.path.exists(log_dir):
         log_dir = orig_log_dir + str(idx)
         idx += 1
-    os.makedirs(log_dir)
+    os.makedirs(log_dir, exist_ok=True)
     params_dict = vars(args)
     graph_log_dict = {
         "sw_grid": sw_grid.tolist(),
