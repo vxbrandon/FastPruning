@@ -241,6 +241,36 @@ def exp_trainability(args: argparse.Namespace = None) -> None:
             print(log_dict)
             utils.log_data(log_dict, filepath)
 
+    if is_plot:
+        fig = plt.figure(figsize=plt.figaspect(1.0))
+        ax = plt.axes(projection='3d')
+
+        surf = ax.plot_surface(sw_grid, sb_grid, eval_acc_grid,)
+                               # rstride=1, cstride=1, cmap=cm.coolwarm,
+                               # linewidth=0, antialiased=False)
+        fig.colorbar(surf, shrink=0.5, aspect=10)
+        ax.set_xlabel("sw")
+        ax.set_ylabel("sb")
+        ax.set_zlabel("eval acc")
+
+        # EOC curve
+        num_taus = sw_grid.shape[0]
+        eoc_idx = (num_taus - 1) / 2
+        eoc_sw_list = sw_grid[eoc_idx, :]
+        eoc_sb_list = sb_grid[eoc_idx, :]
+        eoc_eval_acc_list = eval_acc_grid[eoc_idx, :]
+        ax.plot(eoc_sw_list, eoc_sb_list, eoc_eval_acc_list, label='EOC')
+        plt.show()
+
+        # logging in Wandb
+        wandb.init(
+            project="Edge of Chaos",
+            tags=["EOC preliminary", "EOC trainability"],
+            group="3d_graph",
+            config=vars(args),
+        )
+        wandb.log({"3d plot": wandb.Image(fig)})
+        wandb.finish()
     # Logging 3d results
     orig_log_dir = os.path.join("logs_3d", "run_")
     log_dir = orig_log_dir
@@ -263,27 +293,6 @@ def exp_trainability(args: argparse.Namespace = None) -> None:
         json.dump(params_dict, f)
     with open(graph_log_path, 'w+') as f:
         json.dump(graph_log_dict, f)
-
-    if is_plot:
-        fig = plt.figure(figsize=plt.figaspect(1.0))
-        ax = plt.axes(projection='3d')
-
-        surf = ax.plot_surface(sw_grid, sb_grid, eval_acc_grid,)
-                               # rstride=1, cstride=1, cmap=cm.coolwarm,
-                               # linewidth=0, antialiased=False)
-        fig.colorbar(surf, shrink=0.5, aspect=10)
-        ax.set_xlabel("sw")
-        ax.set_ylabel("sb")
-        ax.set_zlabel("eval acc")
-
-        # EOC curve
-        num_taus = sw_grid.shape[0]
-        eoc_idx = (num_taus - 1) / 2
-        eoc_sw_list = sw_grid[eoc_idx, :]
-        eoc_sb_list = sb_grid[eoc_idx, :]
-        eoc_eval_acc_list = eval_acc_grid[eoc_idx, :]
-        ax.plot(eoc_sw_list, eoc_sb_list, eoc_eval_acc_list, label='EOC')
-        plt.show()
 
 def plot_3d(filepath:str):
     with open(filepath, 'r') as f:
@@ -356,7 +365,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--num_taus",
-        default=15,
+        default=21,
         type=int,
         help="number of taus(multiplicative constant for variance of weight matrix to check the thickness of"
         "edge of chaos",
