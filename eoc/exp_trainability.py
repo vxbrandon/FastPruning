@@ -265,6 +265,7 @@ def exp_trainability(args: argparse.Namespace = None) -> None:
         # EOC curve
         num_taus = sw_grid.shape[0]
         eoc_idx = (num_taus - 1) / 2
+        eoc_idx = int(eoc_idx)
         eoc_sw_list = sw_grid[eoc_idx, :]
         eoc_sb_list = sb_grid[eoc_idx, :]
         eoc_eval_acc_list = eval_acc_grid[eoc_idx, :]
