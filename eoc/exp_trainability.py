@@ -382,7 +382,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--num_taus",
-        default=1,
+        default=21,
         type=int,
         help="number of taus(multiplicative constant for variance of weight matrix to check the thickness of"
         "edge of chaos",
@@ -401,7 +401,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--num_qstars",
-        default=1,
+        default=15,
         type=int,
         help="Number of qstars with which we do experiments",
     )
@@ -415,7 +415,7 @@ if __name__ == "__main__":
         "--batch-size", default=128, type=int, help="batch size for SGD"
     )
     parser.add_argument(
-        "--epochs", default=1, type=int, help="number of epochs to train FCN"
+        "--epochs", default=20, type=int, help="number of epochs to train FCN"
     )
     parser.add_argument("--optimizer", default="SGD", type=str, help="OPTIMIZER TYPE")
     parser.add_argument(
