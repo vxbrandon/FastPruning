@@ -144,6 +144,15 @@ def exp_trainability(args: argparse.Namespace = None) -> None:
     train_acc_grid = np.empty((len(tau_pers), len(q_stars)))
     eval_acc_grid = np.empty((len(tau_pers), len(q_stars)))
 
+    # Logging the results
+    orig_log_dir = os.path.join("logs_3d", "run_")
+    log_dir = orig_log_dir
+    idx = 0
+    while os.path.exists(log_dir):
+        log_dir = orig_log_dir + str(idx)
+        idx += 1
+    os.makedirs(log_dir, exist_ok=True)
+
     for q_idx in range(len(q_stars)):
         q_star = q_stars[q_idx]
 
@@ -279,13 +288,13 @@ def exp_trainability(args: argparse.Namespace = None) -> None:
         }
         print(graph_log_dict)
     # Logging 3d results
-    orig_log_dir = os.path.join("logs_3d", "run_")
-    log_dir = orig_log_dir
-    idx = 0
-    while os.path.exists(log_dir):
-        log_dir = orig_log_dir + str(idx)
-        idx += 1
-    os.makedirs(log_dir, exist_ok=True)
+    # orig_log_dir = os.path.join("logs_3d", "run_")
+    # log_dir = orig_log_dir
+    # idx = 0
+    # while os.path.exists(log_dir):
+    #     log_dir = orig_log_dir + str(idx)
+    #     idx += 1
+    # os.makedirs(log_dir, exist_ok=True)
     params_dict = vars(args)
     graph_log_dict = {
         "sw_grid": sw_grid.tolist(),
