@@ -33,7 +33,7 @@ class FCN(nn.Module):
             modules[f"fc{idx}"] = nn.Linear(layer_dims[idx], layer_dims[idx + 1])
             modules[f"act{idx}"] = self.act_func()
         modules[f"fc{num_layers - 1}"] = nn.Linear(layer_dims[num_layers - 1], num_classes)
-        modules["final_softmax"] = nn.Softmax()
+        # modules["final_softmax"] = nn.Softmax()
         self.fcn = nn.Sequential(modules)
 
         #

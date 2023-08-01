@@ -345,7 +345,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--num_exps",
-        default=2,
+        default=1,
         type=int,
         help="Number of experiments to get average accuracy of trained model",
     )
@@ -382,14 +382,14 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--num_taus",
-        default=21,
+        default=11,
         type=int,
         help="number of taus(multiplicative constant for variance of weight matrix to check the thickness of"
         "edge of chaos",
     )
     parser.add_argument(
         "--tau_range",
-        default=(-1, 1),
+        default=(-0.5, 0.5),
         type=tuple,
         help="Range of taus(multiplicative constant) for variance of weight matrix (log10 scale)",
     )
@@ -401,7 +401,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--num_qstars",
-        default=15,
+        default=10,
         type=int,
         help="Number of qstars with which we do experiments",
     )
@@ -415,7 +415,7 @@ if __name__ == "__main__":
         "--batch-size", default=128, type=int, help="batch size for SGD"
     )
     parser.add_argument(
-        "--epochs", default=20, type=int, help="number of epochs to train FCN"
+        "--epochs", default=7, type=int, help="number of epochs to train FCN"
     )
     parser.add_argument("--optimizer", default="SGD", type=str, help="OPTIMIZER TYPE")
     parser.add_argument(
