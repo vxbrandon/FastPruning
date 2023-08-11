@@ -36,6 +36,22 @@ def train(
     else:
         is_resize_greyscale = True
 
+    # Logging directory and filename
+    model_filename = f"{model_type}_{data_type}.pt"
+    if model_dir is None:
+        model_dir = "saved_models"
+    model_filepath = os.path.join(model_dir, model_filename)
+
+    if not (os.path.exists(model_dir)):
+        os.makedirs(model_dir)
+
+    if os.path.exists(model_filepath):
+        print(
+            f"{model_type} is already trained on {data_type}. To create new pre-trained model, delete the existing "
+            f"model file."
+        )
+        return
+
     # Flatten dataset if model_type is "FCN".
     is_flatten = True if model_type == "FCN" else False
 
@@ -64,21 +80,6 @@ def train(
         model = ResNet18()
     else:
         raise NotImplementedError(f"{model_type} is not implemented.")
-
-    # Logging directory and filename
-    model_filename = f"{model_type}_{data_type}.pt"
-    if model_dir is None:
-        model_dir = "saved_models"
-    model_filepath = os.path.join(model_dir, model_filename)
-
-    if not (os.path.exists(model_dir)):
-        os.makedirs(model_dir)
-
-    if os.path.exists(model_filepath):
-        print(
-            "FCN is already trained. To create new pre-trained model, delete the existing model file."
-        )
-        return
 
     filepath_rewind = os.path.join(
         model_dir, f"FCN_{num_layers}_{data_type}_rewind_{epoch_rewind}.pt"
@@ -112,7 +113,9 @@ def train(
 
 if __name__ == "__main__":
     dataset_types = ["MNIST", "CIFAR_10", "SVHN", "FASHION_MNIST"]
-    model_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "saved_models")
+    model_dir = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "saved_models"
+    )
     print(model_dir)
     print("Pretraining Models...")
 
