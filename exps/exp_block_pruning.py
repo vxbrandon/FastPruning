@@ -93,7 +93,7 @@ def prune_and_finetune_linear(
 
         for idx in range(len(pruning_types)):
             # Initialize model
-            if model_type == "FCN":
+            if "FCN" in model_type:
                 model = FCN(
                     num_layers=num_layers,
                     input_dims=input_dims,
