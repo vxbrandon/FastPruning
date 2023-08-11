@@ -36,7 +36,7 @@ def linear_prune(
         with torch.no_grad():
             for name, param in module.named_parameters():
                 if "weight" in name:
-                    param *= torch.sqrt(1 / (1 - prune_amount))
+                    param *= torch.sqrt(torch.tensor(1 / (1 - prune_amount), device=param.device))
 
 
 def conv2d_prune(
