@@ -36,12 +36,6 @@ def train(
     else:
         is_resize_greyscale = True
 
-    # Logging directory and filename
-    model_filename = f"{model_type}_{data_type}.pt"
-    if model_dir is None:
-        model_dir = "saved_models"
-    model_filepath = os.path.join(model_dir, model_filename)
-
     if not (os.path.exists(model_dir)):
         os.makedirs(model_dir)
 
@@ -74,11 +68,17 @@ def train(
     else:
         raise NotImplementedError(f"{model_type} is not implemented.")
 
+    # Logging directory and filename
+    model_filename = f"{model_type}_{data_type}.pt"
+    if model_dir is None:
+        model_dir = "saved_models"
+    model_filepath = os.path.join(model_dir, model_filename)
     filepath_rewind = os.path.join(
         model_dir, f"FCN_{num_layers}_{data_type}_rewind_{epoch_rewind}.pt"
     )
 
     # Avoid training a model if its pretrained parameters are already stored in model_dir.
+    print(model_filepath)
     if os.path.exists(model_filepath):
         print(
             f"{model_type} is already trained on {data_type}. To create new pre-trained model, delete the existing "
@@ -117,7 +117,9 @@ if __name__ == "__main__":
     model_dir = os.path.join(
         os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "saved_models"
     )
-    print(model_dir)
+    model_filepath = os.path.join(model_dir, "FCN_MNIST.pt")
+    print(model_filepath)
+    print(os.path.exists(model_filepath))
     print("Pretraining Models...")
 
     # Pre-train FCN
