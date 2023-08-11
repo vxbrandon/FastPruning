@@ -26,32 +26,15 @@ class FCN(nn.Module):
         else:
             assert len(hidden_dims) == num_layers - 1
             layer_dims = [input_dims] + hidden_dims + [num_classes]
-        print(layer_dims)
+        print("FCN architecture: ", layer_dims)
 
         modules = OrderedDict()
         for idx in range(0, num_layers - 1):
             modules[f"fc{idx}"] = nn.Linear(layer_dims[idx], layer_dims[idx + 1])
             modules[f"act{idx}"] = self.act_func()
         modules[f"fc{num_layers - 1}"] = nn.Linear(layer_dims[num_layers - 1], num_classes)
-        # modules["final_softmax"] = nn.Softmax()
-        self.fcn = nn.Sequential(modules)
 
-        #
-        # modules = []
-        #
-        # # Initial Layer
-        # modules.append(nn.Linear(input_dims, hidden_dims[0]))
-        # modules.append(self.act_func())
-        #
-        # # Intermediate Layers
-        # for idx in range(1, num_layers - 1):
-        #     modules.append(nn.Linear(hidden_dims[idx], hidden_dims[idx]))
-        #     modules.append(self.act_func())
-        # # Final Layer
-        # modules.append(nn.Linear(hidden_dims[num_layers-2], num_classes))
-        # modules.append(nn.Softmax())
-        #
-        # self.fcn = nn.Sequential(*modules)
+        self.fcn = nn.Sequential(modules)
 
     def forward(self, x):
         return self.fcn(x)

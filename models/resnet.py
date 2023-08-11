@@ -5,6 +5,8 @@ For Pre-activation ResNet, see 'preact_resnet.py'.
 Reference:
 [1] Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun
     Deep Residual Learning for Image Recognition. arXiv:1512.03385
+
+Copied from https://github.com/kuangliu/pytorch-cifar/blob/master/models/resnet.py
 '''
 import torch
 import torch.nn as nn

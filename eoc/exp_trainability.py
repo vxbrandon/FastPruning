@@ -146,12 +146,12 @@ def exp_trainability(args: argparse.Namespace = None) -> None:
 
     # Logging the results
     orig_log_dir = os.path.join("logs_3d", "run_")
-    log_dir = orig_log_dir
+    log_dir_3d = orig_log_dir
     idx = 0
-    while os.path.exists(log_dir):
-        log_dir = orig_log_dir + str(idx)
+    while os.path.exists(log_dir_3d):
+        log_dir_3d = orig_log_dir + str(idx)
         idx += 1
-    os.makedirs(log_dir, exist_ok=True)
+    os.makedirs(log_dir_3d, exist_ok=True)
 
     for q_idx in range(len(q_stars)):
         q_star = q_stars[q_idx]
@@ -251,26 +251,7 @@ def exp_trainability(args: argparse.Namespace = None) -> None:
             utils.log_data(log_dict, filepath)
 
     if is_plot:
-        fig = plt.figure(figsize=plt.figaspect(1.0))
-        ax = plt.axes(projection='3d')
-
-        surf = ax.plot_surface(sw_grid, sb_grid, eval_acc_grid,)
-                               # rstride=1, cstride=1, cmap=cm.coolwarm,
-                               # linewidth=0, antialiased=False)
-        fig.colorbar(surf, shrink=0.5, aspect=10)
-        ax.set_xlabel("sw")
-        ax.set_ylabel("sb")
-        ax.set_zlabel("eval acc")
-
-        # EOC curve
-        num_taus = sw_grid.shape[0]
-        eoc_idx = (num_taus - 1) / 2
-        eoc_idx = int(eoc_idx)
-        eoc_sw_list = sw_grid[eoc_idx, :]
-        eoc_sb_list = sb_grid[eoc_idx, :]
-        eoc_eval_acc_list = eval_acc_grid[eoc_idx, :]
-        ax.plot(eoc_sw_list, eoc_sb_list, eoc_eval_acc_list, label='EOC')
-        plt.show()
+        fig = plot_3d(log_dir_3d)
 
         # logging in Wandb
         wandb.init(
@@ -311,21 +292,28 @@ def exp_trainability(args: argparse.Namespace = None) -> None:
     with open(graph_log_path, 'w+') as f:
         json.dump(graph_log_dict, f)
 
-def plot_3d(filepath:str):
+def plot_3d(filepath:str, is_flip_xaxis: bool=False):
     with open(filepath, 'r') as f:
         loaded_dict = json.load(f)
     sw_grid = np.array(loaded_dict["sw_grid"])
     sb_grid = np.array(loaded_dict["sb_grid"])
-    train_acc_grid = np.array(loaded_dict["train_acc_grid"])
+    train_acc_grid = np.array(loaded_dict["eval_acc_grid"])
+
+    # Flip x-axis
+    if is_flip_xaxis:
+        sw_grid = np.flip(sw_grid, axis=0)
+        train_acc_grid = np.flip(train_acc_grid, axis=0)
+
     fig = plt.figure(figsize=(10, 8))
     ax = plt.axes(projection='3d')
+    ax.invert_xaxis()
 
     surf = ax.plot_surface(sw_grid, sb_grid, train_acc_grid, rstride=1, cstride=1, cmap=cm.coolwarm,
-                           linewidth=0, antialiased=False)
+                           linewidth=0, antialiased=False, alpha=0.6)
     fig.colorbar(surf, shrink=0.5, aspect=10)
     ax.set_xlabel("sw")
     ax.set_ylabel("sb")
-    ax.set_zlabel("train acc")
+    ax.set_zlabel("eval acc")
 
     # EOC curve
     num_taus = sw_grid.shape[0]
@@ -333,8 +321,10 @@ def plot_3d(filepath:str):
     eoc_sw_list = sw_grid[eoc_idx, :]
     eoc_sb_list = sb_grid[eoc_idx, :]
     eoc_eval_acc_list = train_acc_grid[eoc_idx, :]
-    ax.plot(eoc_sw_list, eoc_sb_list, eoc_eval_acc_list, label='EOC')
+    ax.plot(eoc_sw_list, eoc_sb_list, eoc_eval_acc_list, label='EOC', linewidth=5, alpha=1.0, color='black')
     plt.show()
+
+    return fig
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -436,6 +426,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     assert args.num_taus % 2 != 0, f"{args.num_taus} should be odd to include tau_per = 1 which is EOC case"
+
     exp_trainability(args)
-    # filepath = os.path.join("logs_3d", "run_", "3d_graph_log.json")
-    # plot_3d(filepath)
+    filepath = os.path.join("logs_3d", "run_0", "3d_graph_log.json")
+    plot_3d(filepath, is_flip_xaxis=False)
