@@ -36,9 +36,6 @@ def train(
     else:
         is_resize_greyscale = True
 
-    if not (os.path.exists(model_dir)):
-        os.makedirs(model_dir)
-
     # Flatten dataset if model_type is "FCN".
     is_flatten = True if model_type == "FCN" else False
 
@@ -76,6 +73,8 @@ def train(
     filepath_rewind = os.path.join(
         model_dir, f"FCN_{num_layers}_{data_type}_rewind_{epoch_rewind}.pt"
     )
+    if not (os.path.exists(model_dir)):
+        os.makedirs(model_dir)
 
     # Avoid training a model if its pretrained parameters are already stored in model_dir.
     print(model_filepath)
