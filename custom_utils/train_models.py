@@ -57,6 +57,7 @@ def train(
         model = FCN(
             num_layers=num_layers, input_dims=input_dims, num_classes=len(classes)
         )
+        model_type += f"-{num_layers}"
     elif model_type == "VGG-19":
         model = vgg19_bn()
     elif model_type == "RESNET-18":
@@ -65,7 +66,7 @@ def train(
         raise NotImplementedError(f"{model_type} is not implemented.")
 
     # Logging directory and filename
-    model_filename = f"FCN_{num_layers}_{data_type}.pt"
+    model_filename = f"{model_type}_{data_type}.pt"
     if model_dir is None:
         model_dir = "saved_models"
     model_filepath = os.path.join(model_dir, model_filename)
