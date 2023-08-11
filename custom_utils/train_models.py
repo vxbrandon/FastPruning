@@ -26,7 +26,10 @@ def train(
     verbose: bool = True,
     model_dir: str = None,
 ):
+    # Set random seed
     utils.set_random_seeds(seed)
+
+    # Define device
     cuda_device = torch.device("cuda:0")
 
     # The CNN models assume that the dataset is of size (32, 32, 3), so we need to adapt the greyscale dataset to fit
@@ -71,13 +74,12 @@ def train(
         model_dir = "saved_models"
     model_filepath = os.path.join(model_dir, model_filename)
     filepath_rewind = os.path.join(
-        model_dir, f"FCN_{num_layers}_{data_type}_rewind_{epoch_rewind}.pt"
+        model_dir, f"{model_type}_{data_type}_rewind_{epoch_rewind}.pt"
     )
     if not (os.path.exists(model_dir)):
         os.makedirs(model_dir)
 
     # Avoid training a model if its pretrained parameters are already stored in model_dir.
-    print(model_filepath)
     if os.path.exists(model_filepath):
         print(
             f"{model_type} is already trained on {data_type}. To create new pre-trained model, delete the existing "
