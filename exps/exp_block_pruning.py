@@ -249,12 +249,14 @@ def exp():
     data_types = ["MNIST", "CIFAR_10", "SVHN", "FASHION_MNIST"]
     num_layers = 5  # Hard-coded
 
+    print("Pruning & Fine-tuning...")
     for model_type in model_types:
         if model_type == "FCN":
             weight_decay = 5e-4
         else:
             weight_decay = 1e-4
         for data_type in data_types:
+            print(f"\n==model: {model_type} & dataset: {data_type}")
             block_sizes = get_block_sizes(model_type=model_type, data_type=data_type)
             prune_and_finetune_linear(
                 model_type=model_type,
@@ -268,4 +270,4 @@ def exp():
 
 
 if __name__ == "__main__":
-    print(get_block_sizes("FCN", "MNIST"))
+    exp()
