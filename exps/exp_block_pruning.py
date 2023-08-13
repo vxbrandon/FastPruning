@@ -76,7 +76,11 @@ def prune_and_finetune_linear(
     model_name = f"{model_type}_{data_type}"
     model_filename = model_name + ".pt"
     model_filepath = os.path.join(model_dir, model_filename)
-    pruning_types = ["Block_diag", "Block_diag_perm", "Unstructured"]
+    pruning_types = [
+        "Block_diag",
+        "Block_diag_perm",
+        "Unstructured",
+    ]  # Jay: Hard-coded. Should be fixed.
     datas = [defaultdict(list) for _ in range(3)]
     pruned_model_filenames = []
     for idx in range(len(pruning_types)):
@@ -264,10 +268,37 @@ def exp():
                 model_dir=model_dir,
                 log_dir=log_dir,
                 num_layers=num_layers,
-                weight_decay = weight_decay,
+                weight_decay=weight_decay,
                 block_sizes=block_sizes,
+            )
+
+
+def plot_exp():
+    parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    log_dir = os.path.join(parent_dir, "logs", "pruning_fine-tuning_exps")
+    pruning_types = [
+        "Block_diag",
+        "Block_diag_perm",
+        "Unstructured",
+    ]
+    model_types = ["FCN-5", "VGG-19"]
+    data_types = ["MNIST", "CIFAR_10", "SVHN", "FASHION_MNIST"]
+    for model_type in model_types:
+        for data_type in data_types:
+            log_paths = []
+            for pruning_type in pruning_types:
+                log_path = os.path.join(
+                    log_dir, f"{pruning_type}_{model_type}_{data_type}.csv"
+                )
+                log_paths.append(log_path)
+            utils.plot(
+                log_paths=log_paths,
+                model_name=model_type,
+                data_type=data_type,
+                pruning_types=pruning_types,
             )
 
 
 if __name__ == "__main__":
     exp()
+    plot_exp()

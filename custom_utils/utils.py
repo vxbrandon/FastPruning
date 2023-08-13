@@ -10,6 +10,8 @@ import torch.nn.utils.prune as prune
 import torchvision
 import sklearn.metrics
 import pandas as pd
+import matplotlib.pyplot as plt
+from pandas import read_csv
 from torchvision import datasets, transforms
 from torch.utils.tensorboard import SummaryWriter
 from typing import List
@@ -164,7 +166,6 @@ def prepare_dataloader(
         classes = train_set.classes
 
     elif data_type == "SVHN":
-
         # Define the transformation
         transform = transforms.Compose(
             [
@@ -693,3 +694,30 @@ def remove_parameters(model):
                 pass
 
     return model
+
+
+def plot(
+    log_paths: List[str],
+    data_type: str,
+    model_name: str,
+    pruning_types: List[str] = ["Block_diag", "Block_diag_perm", "Unstructured"],
+):
+    assert len(log_paths) == len(
+        pruning_types
+    ), "The number of files given should match with the number of pruning types."
+    plt.xlabel("Global Sparsity (as block size varies)")
+    plt.ylabel("Test accuracy")
+    for idx in range(len(pruning_types)):
+        log_dir = log_paths[idx]
+        pruning_type = pruning_types[idx]
+        data = read_csv(log_dir)
+        global_sparsity_list = data["global sparsity"].to_list()
+        accuracy_list = data["eval_accuracy"].to_list()
+        plt.plot(global_sparsity_list, accuracy_list, label=pruning_type)
+
+    plt.legend(loc="lower left")
+    # plt.ylim((lin_eval_acc.cpu() - 0.05, fcn_5_eval_acc.cpu() + 0.05))
+    # plt.xlim((0.50, 1.00))
+    plt.xticks(list(plt.xticks()[0][:-2]) + [round(global_sparsity_list[-1], 3)])
+    plt.title(f"Block Pruning of {model_name} on {data_type}")
+    plt.show()
