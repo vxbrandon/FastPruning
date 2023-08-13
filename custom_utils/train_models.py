@@ -127,7 +127,7 @@ if __name__ == "__main__":
     model_type = "FCN"
     for dataset_type in dataset_types:
         print(f"\n==Training {model_type} on {dataset_type}==")
-        num_epochs = 1 if dataset_type == "CIFAR_10" else 1
+        num_epochs = 300 if dataset_type == "CIFAR_10" else 100
         train(data_type=dataset_type, model_type=model_type, num_epochs=num_epochs)
 
     # Pre-train VGG-19bn
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     lr_rate = 5e-3
     for dataset_type in dataset_types:
         print(f"Training {model_type} on {dataset_type}..")
-        num_epochs = 1 if dataset_type == "CIFAR_10" else 1
+        num_epochs = 300 if dataset_type == "CIFAR_10" else 100
         train(
             data_type=dataset_type,
             model_type=model_type,
