@@ -264,8 +264,9 @@ def exp():
                 model_dir=model_dir,
                 log_dir=log_dir,
                 num_layers=num_layers,
-                weight_decay = weight_decay,
+                weight_decay=weight_decay,
                 block_sizes=block_sizes,
+                num_epochs=1,
             )
 
 
