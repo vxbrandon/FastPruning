@@ -10,7 +10,7 @@ def linear_prune(
     module: nn.Linear, prune_type: str, block_size: int = 1, is_scaling: bool = False
 ):
     pruned_model_names = ["Block_diag", "Block_diag_perm", "Block_l1", "Unstructured"]
-    prune_amount = float(max(0, min(module.weight.size()) / block_size))
+    prune_amount = float(max(0,  1 - block_size/min(module.weight.size())))
     k = block_size
     a = pruned_model_names
 
