@@ -105,12 +105,15 @@ def prune_and_finetune_linear(
                     num_classes=len(classes),
                 )
                 prune_func = linear_prune
+                prune_type = "LINEAR"
             elif model_type == "VGG-19":
                 model = vgg19_bn()
                 prune_func = conv2d_prune
+                prune_type = "CONV2d"
             elif model_type == "RESNET-18":
                 model = ResNet18()
                 prune_func = conv2d_prune
+                prune_type = "CONV2d"
             else:
                 raise NotImplementedError(f"{model_type} is not implemented.")
 
@@ -124,9 +127,11 @@ def prune_and_finetune_linear(
             pruned_models[idx] = model
 
             for name, module in model.named_modules():
-                if isinstance(module, nn.Linear) and module.weight.size()[0] != len(
-                    classes
-                ):
+                if (
+                    isinstance(module, nn.Linear)
+                    and module.weight.size()[0] != len(classes)
+                    and prune_type == "LINEAR"
+                ) or (isinstance(module, nn.Conv2d) and prune_type == "CONV2d"):
                     prune_func(
                         module=module,
                         prune_type=pruning_type,
@@ -281,8 +286,8 @@ def plot_exp():
         "Block_diag_perm",
         "Unstructured",
     ]
-    model_types = ["FCN-5", "VGG-19"]
-    data_types = ["MNIST", "CIFAR_10", "SVHN", "FASHION_MNIST"]
+    model_types = ["FCN-5"] #, "VGG-19"]
+    data_types = ["MNIST"] #, "CIFAR_10", "SVHN", "FASHION_MNIST"]
     for model_type in model_types:
         for data_type in data_types:
             log_paths = []
